@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+	<meta charset="utf-8" />
+    <style>
+        canvas {
+            border:1px solid #000000;
+            background-color: #F1F1F1;
+        }
+    </style>
+</head>
+<body onload="startGame()">
+    <header>Small Game Testing</header>
+    <script>
+        var myPiece;
+        var myObstacle;
+
+        function startGame() {
+            myPiece = new piece(50, 50, "red", 0, 0);
+            myObstacle = new piece(50, 50, "blue", 225, 225);
+            gameArea.start();
+        }
+        var gameArea = {
+            canvas: document.createElement('canvas'),
+            start: function () {
+                this.canvas.width = 500;
+                this.canvas.height = 500;
+                this.context = this.canvas.getContext('2d');
+                document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+                this.interval = setInterval(updateGameArea, 15);
+                window.addEventListener('keydown', function (e) {
+                    gameArea.keys = (gameArea.keys || []);
+                    gameArea.keys[e.keyCode] = true;
+                })
+                window.addEventListener('keyup', function (e) {
+                    gameArea.keys[e.keyCode] = false;
+                })
+            },
+            clear: function() {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            },
+            stop: function() {
+                clearInterval(this.interval);
+            }
+        }
+
+        function piece(w, h, color, x, y) {
+            this.width = w;
+            this.height = h;
+            this.speedx = 0;
+            this.speedy = 0;
+            this.x = x;
+            this.y = y;
+            this.update = function () {
+                ctx = gameArea.context;
+                ctx.fillStyle = color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+            this.newPos = function () {
+                this.x += this.speedx;
+                this.y += this.speedy;
+            }
+            this.crashWith = function (otherobj) {
+                var endX = this.x + this.width;
+                var endY = this.y + this.height;
+                var otherEndX = otherobj.x + otherobj.width;
+                var otherEndY = otherobj.y + otherobj.height;
+                var collision = true;
+                if ((endX < otherobj.x) || (this.x > otherEndX)
+                    || (endY < otherobj.y) || (this.y > otherEndY)) {
+                    collision = false;
+                }
+                return collision;
+            }
+            this.moveUp    = function () { this.speedy = -1; }
+            this.moveDown  = function () { this.speedy =  1; }
+            this.moveLeft  = function () { this.speedx = -1; }
+            this.moveRight = function () { this.speedx =  1; }
+            this.halt      = function () { this.speedx =  0; 
+                                           this.speedy =  0; }
+        }
+
+        function updateGameArea() {
+            if (myPiece.crashWith(myObstacle)) {
+                gameArea.stop();
+            } else {
+                gameArea.clear();
+                myPiece.halt();
+                if (gameArea.keys && gameArea.keys[65]) { myPiece.moveLeft(); }
+                if (gameArea.keys && gameArea.keys[68]) { myPiece.moveRight(); }
+                if (gameArea.keys && gameArea.keys[87]) { myPiece.moveUp(); }
+                if (gameArea.keys && gameArea.keys[83]) { myPiece.moveDown(); }
+                myObstacle.update();
+                myPiece.newPos();
+                myPiece.update();
+            }
+        }
+
+    </script>
+</body>
+</html>
