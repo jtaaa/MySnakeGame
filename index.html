@@ -7,14 +7,16 @@
         canvas {
             display: block;
             margin: 0 auto;
-            border:1px solid #000000;
+            border:5px solid #808080;
             background-color: #F1F1F1;
         }
     </style>
 </head>
 <body onload="startGame()">
-    <button onclick="startGame()" style="margin: auto; display: block;">Restart</button>
-    <h1 id="score" style="text-align: center;">0</h1>
+    <div style="text-align: center;">
+        <button onclick="startGame()" style="margin-top: 25px">Play Again</button>
+    </div>
+    <h1 id="score" style="text-align: center;">Score: 0</h1>
     <script>
         var myPiece;
         var myObstacle;
@@ -25,7 +27,7 @@
         var score;
         var direction;
         var t;
-        var GAME_AREA_HEIGHT = 100;
+        var GAME_AREA_HEIGHT = 500;
         var GAME_AREA_WIDTH  = 500;
         var BLOCK_HEIGHT = 50;
         var BLOCK_WIDTH = 50;
@@ -49,7 +51,7 @@
                 this.canvas.height = GAME_AREA_HEIGHT;
                 this.context = this.canvas.getContext('2d');
                 document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-                this.interval = setInterval(updateGameArea, 20);
+                this.interval = setInterval(updateGameArea, 15);
                 window.addEventListener('keydown', function (e) {
                     gameArea.key = e.keyCode;
                 })
@@ -80,7 +82,7 @@
                 y = Math.floor(Math.random() * (GAME_AREA_HEIGHT / BLOCK_HEIGHT)) * BLOCK_WIDTH;
                 for (var i = 0; i < mySnake.length; i++) {
                     if ((x == mySnake[i].x) && (y == mySnake[i].y)) {
-                        console.log('Shit');
+                        console.log('Failed Placement');
                         unique = false;
                         break;
                     }
@@ -153,7 +155,7 @@
                         gameArea.context.textAlign = "center";
                         gameArea.context.fillText("You Win! Score: " + score, gameArea.canvas.width / 2, gameArea.canvas.height / 2);
                     }
-                    scoreBox.innerHTML = score;
+                    scoreBox.innerHTML = "Score: " + score;
                 } else { mySnake.pop(); }
 
                 myFruit.update();
